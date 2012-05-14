@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	// "fmt"
 	"github.com/petar/GoLLRB/llrb"
 	"math"
 )
@@ -20,7 +20,7 @@ func max(a ...float64) (m float64) {
 }
 
 func (i *IntervalItem) Notify(n *llrb.Node) {
-	fmt.Println("notified of a change!")
+	// fmt.Println("notified of a change!")
 	leftMax := math.Inf(-1)
 	rightMax := math.Inf(-1)
 	if n.Left != nil {
@@ -66,11 +66,11 @@ func updateMaxEnd(n *llrb.Node) {
 func DoOnNodes(n *llrb.Node, f func(n *llrb.Node)) {
 	f(n)
 	if n.Left != nil {
-		DoOnNodes(n.Left, updateMaxEnd)
+		DoOnNodes(n.Left, f)
 	}
 
 	if n.Right != nil {
-		DoOnNodes(n.Right, updateMaxEnd)
+		DoOnNodes(n.Right, f)
 	}
 }
 
@@ -86,52 +86,47 @@ func (t *Tree) Cover(x float64) (out []Interval) {
 		close(c)
 	}()
 	for x := range c {
-		fmt.Println("appending", x)
 		out = append(out, x)
 	}
-	fmt.Println("final out", out)
+	// fmt.Println("final out", out)
 	return out
 }
 
 func (t *Tree) search(n *llrb.Node, x float64, out chan Interval) {
-	fmt.Println("search(", n.Item, x, out, ")")
+	// fmt.Println("search(", n.Item, x, out, ")")
 	interval := n.Item.(IntervalItem)
 
-	fmt.Println("interval:", interval, "maxEnd:", interval.maxEnd)
+	// fmt.Println("interval:", interval, "maxEnd:", interval.maxEnd)
 
 	// If x is past the end, then there won't be any matches.
 	if x > interval.maxEnd {
-		fmt.Println("past the end")
+		// fmt.Println("past the end")
 		return
 	}
 
 	// Search left children
 	if n.Left != nil {
-		fmt.Println("searching left")
+		// fmt.Println("searching left")
 		t.search(n.Left, x, out)
 	}
 
 	// Check this interval
 	if interval.Contains(x) {
-		fmt.Println("got one!", interval.Interval)
+		// fmt.Println("got one!", interval.Interval)
 		out <- *interval.Interval
-		fmt.Println("out:", out)
+		// fmt.Println("out:", out)
 	}
 
 	// If x is to the left of the start, then it can't be in any child on the
 	// right.
 	if x < interval.Start {
-		fmt.Println("we're to the left of the start")
+		// fmt.Println("we're to the left of the start")
 		return
 	}
 
 	// Otherwise search the right children.
 	if n.Right != nil {
-		fmt.Println("searching right")
+		// fmt.Println("searching right")
 		t.search(n.Right, x, out)
 	}
 }
-
-// func (t *Tree) Len() int {
-// 	return t.Len()
-// }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"sort"
 	"testing"
 )
 
@@ -17,6 +16,7 @@ type Covering struct {
 }
 
 var intervals1 = []Interval{
+	Interval{-1, 0.5},
 	Interval{0., 1.},
 	// Interval{0., 1.},
 	Interval{0.75, 1.75},
@@ -25,6 +25,7 @@ var intervals1 = []Interval{
 
 var coverings1 = map[float64][]Interval{
 	0.25: []Interval{
+		Interval{-1., 0.5},
 		Interval{0., 1.},
 	},
 	0.8: []Interval{
@@ -38,34 +39,13 @@ var coverings1 = map[float64][]Interval{
 }
 
 var treeTests = []TreeTest{
-	TreeTest{intervals1, 3, coverings1},
+	TreeTest{intervals1, 4, coverings1},
 }
 
 func InsertIntervals(tree IntervalTreeInterface, intervals []Interval) {
 	for _, i := range intervals {
 		tree.Insert(i)
 	}
-}
-
-func sliceEqual(x, y []Interval) bool {
-	if len(x) != len(y) {
-		return false
-	}
-	for i, _ := range x {
-		if x[i] != y[i] {
-			return false
-		}
-	}
-	return true
-}
-
-func unorderedSliceEqual(x, y []Interval) bool {
-	orderedX := IntervalSlice(x)
-	orderedY := IntervalSlice(y)
-	sort.Sort(orderedX)
-	sort.Sort(orderedY)
-
-	return sliceEqual(orderedX, orderedY)
 }
 
 func TestNaiveTree(t *testing.T) {
