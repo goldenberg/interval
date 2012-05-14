@@ -1,35 +1,40 @@
 package main
 
+import (
+	"fmt"
+)
+
 type Interval struct {
 	Start, End float64
 }
 
-func (i *Interval) In(x float64) bool {
+func (i *Interval) Contains(x float64) bool {
 	return (x >= i.Start) && (x <= i.End)
 }
 
-func Intersect(x, y Interval) (Interval, bool) {
+func (i *Interval) String() string {
+	return fmt.Sprintf("[%v, %v]", i.Start, i.End)
+}
+
+func Intersect(x, y Interval) Interval {
 	// Assume WLOG, x.Start < y.Start
 	if x.Start > y.Start {
 		x, y = y, x
 	}
 
-	if x.End < y.Start && x.End < y.End {
-		// x and y partially overlap.
-		return Interval{x.End, y.Start}, true
-	} else if x.Start < y.Start && y.End < x.End {
-		// y is a subinterval of x
-		return y, true
-	} else if x.End < y.Start {
+	switch {
+	case x.End < y.Start:
 		// x and y do not intersect.
-		return Interval{}, false
-	} else {
-		panic("")
+		return Interval{}
+	case x.End < y.Start && x.End < y.End:
+		// x and y partially overlap.
+		return Interval{x.End, y.Start}
+	case x.Start < y.Start && y.End < x.End:
+		// y is a subinterval of x
+		return y
 	}
-	return Interval{}, false
+	return Interval{}
 }
-
-// Intersect, Union if overlapping?
 
 type IntervalSlice []Interval
 

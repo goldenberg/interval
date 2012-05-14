@@ -18,7 +18,7 @@ type Covering struct {
 
 var intervals1 = []Interval{
 	Interval{0., 1.},
-	Interval{0., 1.},
+	// Interval{0., 1.},
 	Interval{0.75, 1.75},
 	Interval{1.5, 2.},
 }
@@ -68,9 +68,18 @@ func unorderedSliceEqual(x, y []Interval) bool {
 	return sliceEqual(orderedX, orderedY)
 }
 
-func TestLen(t *testing.T) {
+func TestNaiveTree(t *testing.T) {
+	tree := NewNaiveIntervalTree()
+	testTree(t, tree)
+}
+
+func TestLLRBTree(t *testing.T) {
+	tree := NewTree()
+	testTree(t, tree)
+}
+
+func testTree(t *testing.T, tree IntervalTreeInterface) {
 	for _, test := range treeTests {
-		tree := NewNaiveIntervalTree()
 		InsertIntervals(tree, intervals1)
 
 		if tree.Len() != test.expectedLen {
@@ -80,7 +89,7 @@ func TestLen(t *testing.T) {
 		for x, intervals := range test.coverings {
 			coveringSlices := tree.Cover(x)
 			if !unorderedSliceEqual(coveringSlices, intervals) {
-				t.Errorf("Got covering slices %v, expected %v", coveringSlices, intervals)
+				t.Errorf("For point %v, got covering slices %v, expected %v", x, coveringSlices, intervals)
 			}
 		}
 	}

@@ -17,7 +17,7 @@ func (t NaiveIntervalTree) Remove(i Interval) {
 func (t NaiveIntervalTree) Cover(x float64) (out []Interval) {
 	out = make([]Interval, 0)
 	for ti, _ := range t {
-		if ti.In(x) {
+		if ti.Contains(x) {
 			out = append(out, ti)
 		}
 	}
